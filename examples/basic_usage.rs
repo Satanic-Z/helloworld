@@ -11,7 +11,7 @@ fn main() {
     println!("{}", greet("Rustacean"));
 
     // Formal greeting
-    println!("{}", greet_formal("Developer"));
+    println!("{}", greet_formal("Developer", "Mr."));
 
     // Multiple greetings
     let names = vec!["Alice", "Bob", "Charlie"];
