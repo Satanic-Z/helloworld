@@ -2,25 +2,3 @@
 avoid-breaking-exported-api = false
 msrv = "1.70.0"
 
-# Allow certain lints that might be too strict for this project
-allow = [
-    "clippy::missing_docs_in_private_items",
-]
-
-# Warn on additional lints
-warn = [
-    "clippy::all",
-    "clippy::pedantic",
-    "clippy::nursery",
-    "clippy::cargo",
-]
-
-# Deny certain dangerous patterns
-deny = [
-    "clippy::unwrap_used",
-    "clippy::expect_used",
-    "clippy::panic",
-    "clippy::unreachable",
-    "clippy::todo",
-    "clippy::unimplemented",
-]
