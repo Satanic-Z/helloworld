@@ -1,0 +1,42 @@
+[package]
+name = "helloworld"
+version = "0.1.0"
+edition = "2024"
+authors = ["Your Name <your.email@example.com>"]
+description = "A simple Hello World application demonstrating Rust best practices"
+repository = "https://github.com/username/helloworld"
+license = "MIT"
+keywords = ["hello", "world", "example"]
+categories = ["command-line-utilities"]
+readme = "README.md"
+homepage = "https://github.com/username/helloworld"
+documentation = "https://docs.rs/helloworld"
+
+[dependencies]
+# Add your dependencies here
+# Example: serde = { version = "1.0", features = ["derive"] }
+
+[dev-dependencies]
+# Development dependencies for testing and benchmarking
+criterion = "0.5"
+
+[profile.release]
+# Optimize for performance in release builds
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+
+[profile.dev]
+# Optimize for compilation speed in debug builds
+opt-level = 0
+debug = true
+overflow-checks = true
+
+[[bin]]
+name = "helloworld"
+path = "src/main.rs"
+
+[lib]
+name = "helloworld"
+path = "src/lib.rs"
