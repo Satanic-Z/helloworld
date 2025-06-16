@@ -37,6 +37,32 @@
     clippy::unimplemented,
 )]
 
+/// Error types for greeting operations
+#[derive(Debug, Clone, PartialEq)]
+pub enum GreetingError {
+    /// Empty name provided
+    EmptyName,
+    /// Invalid language code
+    InvalidLanguage(String),
+    /// Name too long (over 100 characters)
+    NameTooLong(usize),
+}
+
+impl std::fmt::Display for GreetingError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::EmptyName => write!(f, "Name cannot be empty"),
+            Self::InvalidLanguage(lang) => write!(f, "Unsupported language code: {}", lang),
+            Self::NameTooLong(len) => write!(f, "Name too long ({} characters), maximum is 100", len),
+        }
+    }
+}
+
+impl std::error::Error for GreetingError {}
+
+/// Result type for greeting operations
+pub type GreetingResult<T> = Result<T, GreetingError>;
+
 /// Supported languages for multilingual greetings
 #[derive(Debug, Clone, PartialEq)]
 pub enum Language {
@@ -194,6 +220,91 @@ pub fn get_supported_languages() -> Vec<Language> {
     ]
 }
 
+/// Validates a name for greeting operations
+///
+/// # Arguments
+///
+/// * `name` - The name to validate
+///
+/// # Returns
+///
+/// `Ok(())` if valid, `Err(GreetingError)` if invalid
+///
+/// # Errors
+///
+/// * `GreetingError::EmptyName` - if name is empty or only whitespace
+/// * `GreetingError::NameTooLong` - if name exceeds 100 characters
+pub fn validate_name(name: &str) -> GreetingResult<()> {
+    let trimmed = name.trim();
+    
+    if trimmed.is_empty() {
+        return Err(GreetingError::EmptyName);
+    }
+    
+    if trimmed.len() > 100 {
+        return Err(GreetingError::NameTooLong(trimmed.len()));
+    }
+    
+    Ok(())
+}
+
+/// Safely greets a person with error handling
+///
+/// # Arguments
+///
+/// * `name` - The name to greet
+///
+/// # Returns
+///
+/// `Ok(String)` with greeting message, or `Err(GreetingError)` if invalid
+///
+/// # Examples
+///
+/// ```
+/// use helloworld::safe_greet;
+///
+/// let result = safe_greet("World");
+/// assert!(result.is_ok());
+/// assert_eq!(result.unwrap(), "Hello, World!");
+///
+/// let empty_result = safe_greet("");
+/// assert!(empty_result.is_err());
+/// ```
+pub fn safe_greet(name: &str) -> GreetingResult<String> {
+    validate_name(name)?;
+    Ok(format!("Hello, {}!", name.trim()))
+}
+
+/// Safely greets a person with multilingual support and error handling
+///
+/// # Arguments
+///
+/// * `name` - The name to greet
+/// * `language_code` - The language code
+///
+/// # Returns
+///
+/// `Ok(String)` with greeting message, or `Err(GreetingError)` if invalid
+///
+/// # Examples
+///
+/// ```
+/// use helloworld::safe_greet_multilingual;
+///
+/// let result = safe_greet_multilingual("World", "en");
+/// assert!(result.is_ok());
+///
+/// let empty_result = safe_greet_multilingual("", "en");
+/// assert!(empty_result.is_err());
+/// ```
+pub fn safe_greet_multilingual(name: &str, language_code: &str) -> GreetingResult<String> {
+    validate_name(name)?;
+    
+    let language = Language::from_code(language_code);
+    let greeting = language.greeting_word();
+    Ok(format!("{}, {}!", greeting, name.trim()))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -240,5 +351,47 @@ mod tests {
     fn test_empty_name() {
         assert_eq!(greet(""), "Hello, !");
         assert_eq!(greet_multilingual("", "zh"), "你好, !");
+    }
+
+    #[test]
+    fn test_validate_name() {
+        assert!(validate_name("Alice").is_ok());
+        assert!(validate_name("  Bob  ").is_ok());
+        
+        assert!(matches!(validate_name(""), Err(GreetingError::EmptyName)));
+        assert!(matches!(validate_name("   "), Err(GreetingError::EmptyName)));
+        
+        let long_name = "A".repeat(101);
+        assert!(matches!(validate_name(&long_name), Err(GreetingError::NameTooLong(_))));
+    }
+
+    #[test]
+    fn test_safe_greet() {
+        assert_eq!(safe_greet("Alice").unwrap(), "Hello, Alice!");
+        assert_eq!(safe_greet("  Bob  ").unwrap(), "Hello, Bob!");
+        
+        assert!(safe_greet("").is_err());
+        assert!(safe_greet("   ").is_err());
+    }
+
+    #[test]
+    fn test_safe_greet_multilingual() {
+        assert_eq!(safe_greet_multilingual("World", "en").unwrap(), "Hello, World!");
+        assert_eq!(safe_greet_multilingual("世界", "zh").unwrap(), "你好, 世界!");
+        
+        assert!(safe_greet_multilingual("", "en").is_err());
+        assert!(safe_greet_multilingual("   ", "zh").is_err());
+    }
+
+    #[test]
+    fn test_error_display() {
+        let error = GreetingError::EmptyName;
+        assert_eq!(error.to_string(), "Name cannot be empty");
+        
+        let error = GreetingError::InvalidLanguage("xyz".to_string());
+        assert_eq!(error.to_string(), "Unsupported language code: xyz");
+        
+        let error = GreetingError::NameTooLong(150);
+        assert_eq!(error.to_string(), "Name too long (150 characters), maximum is 100");
     }
 }
