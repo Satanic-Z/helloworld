@@ -1,10 +1,10 @@
 # HelloWorld
 
-A simple Rust application demonstrating best practices.
+A simple Rust application demonstrating best practices with robust error handling.
 
 ## Description
 
-This is a "Hello, World!" application written in Rust, demonstrating project structure and best practices for Rust development.
+This is a "Hello, World!" application written in Rust, demonstrating project structure and best practices for Rust development, including comprehensive error handling mechanisms.
 
 ## Getting Started
 
