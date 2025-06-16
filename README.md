@@ -51,7 +51,6 @@ This is a "Hello, World!" application written in Rust, demonstrating project str
 │   ├── main.rs         # Main application entry point
 │   └── lib.rs          # Library code (if applicable)
 ├── tests/              # Integration tests
-├── benches/            # Benchmarks
 ├── examples/           # Example code
 └── docs/               # Additional documentation
 ```

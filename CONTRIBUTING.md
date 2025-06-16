@@ -22,7 +22,6 @@ Thank you for your interest in contributing to the HelloWorld project!
 - Unit tests should be in the same file as the code being tested
 - Integration tests go in the `tests/` directory
 - Run all tests with `cargo test`
-- Run benchmarks with `cargo bench`
 
 ## Submitting Changes
 

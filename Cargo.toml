@@ -17,8 +17,8 @@ documentation = "https://docs.rs/helloworld"
 # Example: serde = { version = "1.0", features = ["derive"] }
 
 [dev-dependencies]
-# Development dependencies for testing and benchmarking
-criterion = "0.5"
+# Development dependencies for testing
+# Example: tokio-test = "0.4"
 
 [profile.release]
 # Optimize for performance in release builds
